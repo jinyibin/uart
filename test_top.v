@@ -9,9 +9,38 @@ module test_top;
   wire       rs422_di_main; 
   reg        rs422_ro_main;
   
+  
+	wire       led;    //ledtest
+	
+	
+	wire[3:0] cd4514_d;        //4-16 decoder input
+	 wire      cd4514_strobe;   //high level enable the 4-16 decoder to latch the input 
+	wire      cd4514_en_n;     //low level enable 4-16 decoder
+	wire[3:0] cd4514_d_1;      //4-16 decoder back up control
+   wire      cd4514_strobe_1;
+	wire      cd4514_en_n_1;
+	
+	wire[1:0] cd4555_d;        //2-4 decoder input
+	wire      cd4555_en_n;     //2-4 decoder enable,low level active
+	
+	wire[1:0] cd4555_d_1;      //2-4 decoder back up control
+	wire      cd4555_en_n_1;
+	
+	 wire      pre_pwr_on;
+	 wire      pre_pwr_on_1;
+	reg      pre_pwr_on_ack;  //low level signifies pre power open
+	
+	wire [4:0] camera_rst;
+	wire [4:0] camera_pwr_en;
+	wire       sensor_pwr_en;
+	wire       motor_pwr_en;
+	
+	 wire      txd_to_stm32;
+     wire      rxd_from_stm32;	
+  
 //-------------------------------------------------------------------------------
-   parameter  CLK_HALF_PERIOD = 31.25;
-   parameter  UART_CLK_PERIOD = 1000;//1Mhz
+   parameter  CLK_HALF_PERIOD = 10;
+   parameter  UART_CLK_PERIOD = 8681;//115200
 
 	  
 //----------------------------------------------------------------------- 
@@ -22,7 +51,10 @@ module test_top;
      
      #10000 rst_n= 1;
      rs422_ro_main=1'b1;
+	 pre_pwr_on_ack = 1'b1;
+	 
      #10000;
+	 pre_pwr_on_ack = 1'b0;
    
 	   uart_tx(8'h1);
        uart_tx(8'h2);
@@ -38,29 +70,33 @@ module test_top;
        uart_tx(8'h8);
               uart_tx(8'hAA);
        uart_tx(8'h55);
-       uart_tx(8'h1);
+       uart_tx(8'h05);
        uart_tx(8'h2);
-       uart_tx(8'h3);
-       uart_tx(8'h4);
-       uart_tx(8'h5);
-       uart_tx(8'h1);
+       uart_tx(8'h0);
+       uart_tx(8'h0);
+       uart_tx(8'h0);
+       uart_tx(8'h7);
        uart_tx(8'hEF);
               uart_tx(8'h8);
               uart_tx(8'hAA);
        uart_tx(8'h55);
+       uart_tx(8'h05);
        uart_tx(8'h1);
-       uart_tx(8'h2);
-       uart_tx(8'h3);
-       uart_tx(8'h4);
+       uart_tx(8'h0);
+       uart_tx(8'h0);
+       uart_tx(8'h1);
        uart_tx(8'h5);
-       uart_tx(8'h1);
-       uart_tx(8'hF);
+       uart_tx(8'hEF);
               uart_tx(8'h8);
               uart_tx(8'hAA);
        uart_tx(8'h55);
+       uart_tx(8'h05);
+       uart_tx(8'h00);
+       uart_tx(8'h10);
+       uart_tx(8'h01);
        uart_tx(8'h1);
-       uart_tx(8'h2);
-       uart_tx(8'h3);
+       uart_tx(8'h15);
+       uart_tx(8'hEF);
        #100000;
               uart_tx(8'hAA);
        uart_tx(8'h55);
@@ -73,7 +109,7 @@ module test_top;
        uart_tx(8'hEF);
 
 	    
-     #300000 $stop;
+     #500000 $stop;
 
 end    
   always #CLK_HALF_PERIOD clk=~clk;
@@ -123,16 +159,44 @@ endtask
 //-------------------------------------------------------------------------
 
 
-top top(  
+EP4CE10 top(  
             
-                                 
+
+	.led(led),    //ledtest
+	
+
+	
+	.cd4514_d(cd4514_d),        //4-16 decoder input
+	.cd4514_strobe(cd4514_strobe),   //high level enable the 4-16 decoder to latch the input 
+	.cd4514_en_n(cd4514_en_n),     //low level enable 4-16 decoder
+	.cd4514_d_1(cd4514_d_1),      //4-16 decoder back up control
+   .cd4514_strobe_1(cd4514_strobe_1),
+	.cd4514_en_n_1(cd4514_en_n_1),
+	
+	.cd4555_d(cd4555_d),        //2-4 decoder input
+	.cd4555_en_n(cd4555_en_n),     //2-4 decoder enable,low level active
+	
+	.cd4555_d_1(cd4555_d_1),      //2-4 decoder back up control
+	.cd4555_en_n_1(cd4555_en_n_1),
+	
+	.pre_pwr_on(pre_pwr_on),
+	.pre_pwr_on_1(pre_pwr_on_1),
+	.pre_pwr_on_ack(pre_pwr_on_ack),  //low level signifies pre power open
+	
+	.camera_rst(camera_rst),
+	.camera_pwr_en(camera_pwr_en),
+	.sensor_pwr_en(sensor_pwr_en),
+	.motor_pwr_en(motor_pwr_en),
+	
+	.txd_to_stm32(txd_to_stm32),
+    .rxd_from_stm32(rxd_from_stm32)	,                                
    .rs422_de_main(rs422_de_main),                    
    .rs422_re_n_main(rs422_re_n_main),                  
    .rs422_di_main(rs422_di_main),          
    .rs422_ro_main(rs422_ro_main), 
                                  
-   .clk_in(clk),              
-   .rst_in_n(rst_n)                     
+   .clkin(clk)              
+                        
 	);
 	
 	endmodule

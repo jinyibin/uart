@@ -11,7 +11,7 @@
 ***************************************************************************************************************/
 `timescale 1ns/100ps
 `include "define.v"
-//`define LSB
+`define LSB
 
 module command_rw_main(
 	output wire         uart_chip_de,      //uart transceiver chip transmit enable
@@ -64,9 +64,9 @@ parameter   IDLE        = 0,
             BYTE4       = 7,
             PARITY      = 8,
             END         = 9;		
-parameter   RX_TIME_OUT_PROTECTION = 32'd1000,	//guarding time between consecutive rx bytes,
+parameter   RX_TIME_OUT_PROTECTION = 32'd100000,	//guarding time between consecutive rx bytes,
                                                 //guarding time=RX_TIME_OUT_PROTECTION * clk cycles
-            TX_GUARDING_TIME       = 8'd100;    //wait TX_GUARDING_TIME * clk cycles before new transmit
+            TX_GUARDING_TIME       = 32'd50000000;    //wait TX_GUARDING_TIME * clk cycles before new transmit
 //-----------------------------------command transmit----------------------------------------------------------
 reg  [3:0]   state_tx;
 wire [7:0]   parity_tx_calc;	
@@ -250,6 +250,7 @@ always @ (posedge clk)
 		 data_byte_rx         <= #`D 0;
 		 command_rx_ready <= #`D 0;
 		 rx_time_out_cnt <= #`D 0;
+		 parity_rx       <= #`D 0;
    end else begin
 	    case(state_rx)
 		 IDLE   :begin

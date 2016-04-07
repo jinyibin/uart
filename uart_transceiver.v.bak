@@ -9,7 +9,7 @@
 ***************************************************************************************************************/
 `timescale 1ns/100ps
 `include "define.v"
-`define LSB_FIRST
+//`define LSB_FIRST
 
 module uart_transceiver(
    output reg  [7:0]  uart_rx_data,  
@@ -51,17 +51,11 @@ reg  [7:0]    uart_rx_data_reg;
 /*------------------------------------------------------------------*/
    //baudrate= (UART_BAUDRATE+1)*uart_clk
 `ifdef SIM
-
-parameter     UART_BAUDRATE = 217 - 1;//50MHz clk,25MHz uart clk,115.2k baudrate
-parameter     UART_BAUDRATE_HALF = 108 - 1;
-parameter     TX_UART_BAUDRATE = 434 - 1;//50MHz clk,115.2k baudrate
-              //tx baudrate= (TX_UART_BAUDRATE+1)*clk
-
+parameter     UART_BAUDRATE = 8 - 1;
+parameter     UART_BAUDRATE_HALF = 4 - 1;
 `else
-parameter     UART_BAUDRATE = 217 - 1;  
-parameter     UART_BAUDRATE_HALF = 108 - 1;
-parameter     TX_UART_BAUDRATE = 434 - 1;//50MHz clk,115.2k baudrate
-              //tx baudrate= (TX_UART_BAUDRATE+1)*clk
+parameter     UART_BAUDRATE = 8 - 1;  
+parameter     UART_BAUDRATE_HALF = 4 - 1;
 `endif
 
 parameter     IDLE = 0, START = 1, DATA = 2, STOP = 3;
@@ -118,11 +112,11 @@ always@(posedge clk)
 				begin
 					uart_tx    <= #`D 0;
 					uart_tx_en <= #`D 1; 
-					if(uart_tx_sample_timer == TX_UART_BAUDRATE) begin 
+					if(uart_tx_sample_timer == UART_BAUDRATE) begin 
 						uart_tx_sample_timer <= #`D 0;
 						uart_tx_state        <= #`D DATA; 
 					end else begin 
-						uart_tx_sample_timer <= uart_tx_sample_timer + 1; 
+						uart_tx_sample_timer <= #`D uart_tx_sample_timer + 1; 
 					end
 				end
 			DATA:
@@ -133,9 +127,9 @@ always@(posedge clk)
 						 uart_tx <= #`D uart_tx_data_reg[7];
 					`endif
 					uart_tx_en <= #`D 1; 
-					if(uart_tx_sample_timer == TX_UART_BAUDRATE) begin 
+					if(uart_tx_sample_timer == UART_BAUDRATE) begin 
 						uart_tx_sample_timer <= #`D 0;
-						uart_tx_bit_counter  <= uart_tx_bit_counter + 1;
+						uart_tx_bit_counter  <= #`D uart_tx_bit_counter + 1;
 						`ifdef LSB_FIRST
 						   uart_tx_data_reg <= #`D {1'b0,uart_tx_data_reg[7:1]};
 						`else
@@ -145,7 +139,7 @@ always@(posedge clk)
 							uart_tx_state <= #`D STOP; 
 						end 
 					end else begin 
-						uart_tx_sample_timer <= uart_tx_sample_timer + 1; 
+						uart_tx_sample_timer <= #`D uart_tx_sample_timer + 1; 
 					end
 				end
 			STOP:
@@ -159,13 +153,13 @@ always@(posedge clk)
 						uart_tx_status <= #`D 0; 						
 					end
                */					
-					if(uart_tx_sample_timer == TX_UART_BAUDRATE) begin 
+					if(uart_tx_sample_timer == UART_BAUDRATE) begin 
 						uart_tx_sample_timer <= #`D 0;
 						uart_tx_state        <= #`D IDLE;
 						uart_tx_over         <= #`D 1;
 						uart_tx_status       <= #`D 0; 
 					end else begin 
-						uart_tx_sample_timer <= uart_tx_sample_timer + 1; 
+						uart_tx_sample_timer <= #`D uart_tx_sample_timer + 1; 
 					end
 				end
 			default:
@@ -228,7 +222,7 @@ always@(posedge clk)
 						uart_rx_sample_timer <= #`D 0;
 						uart_rx_bit_counter  <= #`D 0;
 					end else begin
-						uart_rx_sample_timer <= uart_rx_sample_timer+1;
+						uart_rx_sample_timer <= #`D uart_rx_sample_timer+1;
 					end
 				end
 			DATA:
@@ -256,12 +250,12 @@ always@(posedge clk)
 						   uart_rx_data_reg[7:1] <= #`D uart_rx_data_reg[6:0];
 	               `endif						
 						uart_rx_sample_timer  <= #`D 0;
-						uart_rx_bit_counter   <= uart_rx_bit_counter + 1;
+						uart_rx_bit_counter   <= #`D uart_rx_bit_counter + 1;
 						if(uart_rx_bit_counter == 7) begin
 							uart_rx_state <= #`D STOP;
 						end
 					end else begin
-						uart_rx_sample_timer <=  uart_rx_sample_timer + 1;
+						uart_rx_sample_timer <= #`D uart_rx_sample_timer + 1;
 					end
 				end
 			STOP:
@@ -276,7 +270,7 @@ always@(posedge clk)
 						uart_rx_data_ready_d1 <= #`D 1;
 						uart_rx_err_d1        <= #`D 1;
 					end else begin
-						uart_rx_sample_timer <= uart_rx_sample_timer + 1;
+						uart_rx_sample_timer <= #`D uart_rx_sample_timer + 1;
 					end
 				end
 			default:
