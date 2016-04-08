@@ -6,6 +6,7 @@
 					 write explosive time reg to set th time of explosion
 					 check explosive_status to see if it is enabled
 					 check err_reg to see if there is err
+					 minimum time of explosion is 2s
                 
 --History    :  2016-04-03  Created by Jin.                          
 
@@ -46,7 +47,7 @@ parameter  PRE_GUARDING_TIME = 32'd5000;   //100us  time to check pre power ,ret
 parameter  EXPLOSION_GUARDING_TIME = 32'd50000;   //1ms, time between consecutive explosion
 parameter  COMMAND_TYPE_EXPLODE = 8'h05;
 parameter  IDLE       = 1,EXPLOSION = 2;
-parameter  EXPLOSIVE_TIME = 32'd400000000;
+parameter  EXPLOSIVE_TIME = 32'd100000000;//2 second explosion time base
 //-------------------------------------------------------------------------------------------------------------			  
 reg [1:0] state;
 
@@ -67,7 +68,7 @@ reg [7:0] channel;
 
 reg [31:0]explosive_en_reg;  //set bit n 1 will enabel explotion of channel n,reset to disable
 reg [7:0] explosive_time_reg;//set time of explosion ,UNIT second
-reg [31:0]explosive_time_cnt;
+reg [32:0]explosive_time_cnt;
 
 always@(posedge clk)
    if(!rst_n)begin		  
@@ -92,204 +93,204 @@ always@(posedge clk)
 		        end
 		 EXPLOSION:begin
 		              if(explosive_en_reg[0])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[0]  <= 1'b1;//set status bit
 						         explosive_en_reg[0]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 0;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end
 						  end else if(explosive_en_reg[1])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[1]  <= 1'b1;//set status bit
 						         explosive_en_reg[1]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 1;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end
 						  end else if(explosive_en_reg[2])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[2]  <= 1'b1;//set status bit
 						         explosive_en_reg[2]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 2;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[3])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[3]  <= 1'b1;//set status bit
 						         explosive_en_reg[3]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 3;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[4])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[4]  <= 1'b1;//set status bit
 						         explosive_en_reg[4]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 4;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[5])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[5]  <= 1'b1;//set status bit
 						         explosive_en_reg[5]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 5;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[6])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[6]  <= 1'b1;//set status bit
 						         explosive_en_reg[6]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 6;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[7])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[7]  <= 1'b1;//set status bit
 						         explosive_en_reg[7]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 7;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[8])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[8]  <= 1'b1;//set status bit
 						         explosive_en_reg[8]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 8;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[9])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[9]  <= 1'b1;//set status bit
 						         explosive_en_reg[9]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 9;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[10])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[10]  <= 1'b1;//set status bit
 						         explosive_en_reg[10]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 10;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[11])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[11]  <= 1'b1;//set status bit
 						         explosive_en_reg[11]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 11;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[12])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[12]  <= 1'b1;//set status bit
 						         explosive_en_reg[12]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 12;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[13])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[13]  <= 1'b1;//set status bit
 						         explosive_en_reg[13]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 13;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[14])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[14]  <= 1'b1;//set status bit
 						         explosive_en_reg[14]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 14;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[15])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[15]  <= 1'b1;//set status bit
 						         explosive_en_reg[15]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 15;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[16])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[16]  <= 1'b1;//set status bit
 						         explosive_en_reg[16]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 16;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[17])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[17]  <= 1'b1;//set status bit
 						         explosive_en_reg[17]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 17;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[18])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[18]  <= 1'b1;//set status bit
 						         explosive_en_reg[18]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 18;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end else if(explosive_en_reg[19])begin
-						      if(explosive_time_cnt == EXPLOSIVE_TIME)begin//explosion over
+						      if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg))begin//explosion over
 								   explosive_status[19]  <= 1'b1;//set status bit
 						         explosive_en_reg[19]  <= 1'b0;//clear en reggiter
-									explosive_time_cnt   <= 32'd0;
+									explosive_time_cnt   <= 33'd0;
 									state                <= #`D IDLE;//return to idle,wait EXPLOSION_GUARDING_TIME for next explosion
 								end else begin
 								   channel            <= 19;
-								   explosive_time_cnt <= explosive_time_cnt + 32'd1;
+								   explosive_time_cnt <= explosive_time_cnt + 33'd1;
 							   end						  
 						  end 		 
 		           end

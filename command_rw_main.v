@@ -5,6 +5,8 @@
                 write command to main by uart
 					 default MSB first
 					 define LSB if want transmit/receive data LSB first
+					 there is TX_GUARDING_TIME time between consecutive bytes transmitted,one byte period minimum
+					 logic state reset if next byte do not arrived  RX_TIME_OUT_PROTECTION time later after last byte
                 
 --History    :  2016-04-03  Created by Jin.                          
 
