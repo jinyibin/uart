@@ -51,10 +51,10 @@ module test_top;
      
      #10000 rst_n= 1;
      rs422_ro_main=1'b1;
-	 pre_pwr_on_ack = 1'b1;
+	 
 	 
      #10000;
-	 pre_pwr_on_ack = 1'b0;
+	 
    
 	   uart_tx(8'h1);
        uart_tx(8'h2);
@@ -70,13 +70,14 @@ module test_top;
        uart_tx(8'h8);
               uart_tx(8'hAA);
        uart_tx(8'h55);
-       uart_tx(8'h05);
+       uart_tx(8'h07);
        uart_tx(8'h2);
        uart_tx(8'h0);
        uart_tx(8'h0);
        uart_tx(8'h0);
-       uart_tx(8'h7);
+       uart_tx(8'h5);
        uart_tx(8'hEF);
+       
               uart_tx(8'h8);
               uart_tx(8'hAA);
        uart_tx(8'h55);
@@ -90,31 +91,50 @@ module test_top;
               uart_tx(8'h8);
               uart_tx(8'hAA);
        uart_tx(8'h55);
-       uart_tx(8'h05);
+       uart_tx(8'h07);
        uart_tx(8'h00);
-       uart_tx(8'h10);
-       uart_tx(8'h01);
+       uart_tx(8'h00);
+       uart_tx(8'h00);
+       uart_tx(8'h0);
+       uart_tx(8'h07);
+       uart_tx(8'hEF);
+       #10000;
+                     uart_tx(8'hAA);
+       uart_tx(8'h55);
+       uart_tx(8'h06);
+       uart_tx(8'h00);
+       uart_tx(8'h00);
+       uart_tx(8'h00);
+       uart_tx(8'h0);
+       uart_tx(8'h06);
+       uart_tx(8'hEF);
+                     uart_tx(8'hAA);
+       uart_tx(8'h55);
+       uart_tx(8'h07);
+       uart_tx(8'h00);
+       uart_tx(8'h00);
+       uart_tx(8'h00);
+       uart_tx(8'h0);
+       uart_tx(8'h07);
+       uart_tx(8'hEF);
+              uart_tx(8'hAA);
+       uart_tx(8'h55);
+       uart_tx(8'h05);
+       uart_tx(8'h3);
+       uart_tx(8'h3);
+       uart_tx(8'h0);
        uart_tx(8'h1);
-       uart_tx(8'h15);
+       uart_tx(8'h4);
        uart_tx(8'hEF);
        #100000;
-              uart_tx(8'hAA);
-       uart_tx(8'h55);
-       uart_tx(8'h1);
-       uart_tx(8'h2);
-       uart_tx(8'h3);
-       uart_tx(8'h4);
-       uart_tx(8'h5);
-       uart_tx(8'h1);
-       uart_tx(8'hEF);
 
 	    
-     #500000 $stop;
+     #1500000 $stop;
 
 end    
   always #CLK_HALF_PERIOD clk=~clk;
 
-
+always #CLK_HALF_PERIOD pre_pwr_on_ack = !pre_pwr_on;
 //------------------------------------------------------------------------------- 
  
 //------------------------------------------------------------------------------- 
@@ -130,21 +150,21 @@ task uart_tx;
 		#UART_CLK_PERIOD ;
 		rs422_ro_main = 0; 
 		#UART_CLK_PERIOD ; 
-		rs422_ro_main = data[7];
-		#UART_CLK_PERIOD ; 
-		rs422_ro_main = data[6]; 
-		#UART_CLK_PERIOD ; 
-		rs422_ro_main = data[5]; 
-		#UART_CLK_PERIOD ; 
-		rs422_ro_main = data[4]; 
-		#UART_CLK_PERIOD ; 
-		rs422_ro_main = data[3]; 
-		#UART_CLK_PERIOD ; 
-		rs422_ro_main = data[2]; 
+		rs422_ro_main = data[0];
 		#UART_CLK_PERIOD ; 
 		rs422_ro_main = data[1]; 
 		#UART_CLK_PERIOD ; 
-		rs422_ro_main = data[0]; 
+		rs422_ro_main = data[2]; 
+		#UART_CLK_PERIOD ; 
+		rs422_ro_main = data[3]; 
+		#UART_CLK_PERIOD ; 
+		rs422_ro_main = data[4]; 
+		#UART_CLK_PERIOD ; 
+		rs422_ro_main = data[5]; 
+		#UART_CLK_PERIOD ; 
+		rs422_ro_main = data[6]; 
+		#UART_CLK_PERIOD ; 
+		rs422_ro_main = data[7]; 
 		#UART_CLK_PERIOD ;
 	  rs422_ro_main = 1; 
 	  #UART_CLK_PERIOD ;        

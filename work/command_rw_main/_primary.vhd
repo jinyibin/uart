@@ -16,7 +16,7 @@ entity command_rw_main is
         PARITY          : integer := 8;
         \END\           : integer := 9;
         RX_TIME_OUT_PROTECTION: integer := 100000;
-        TX_GUARDING_TIME: vl_logic_vector(0 to 15) := (Hi0, Hi0, Hi0, Hi1, Hi0, Hi0, Hi1, Hi1, Hi1, Hi0, Hi0, Hi0, Hi1, Hi0, Hi0, Hi0)
+        TX_GUARDING_TIME: integer := 50000000
     );
     port(
         uart_chip_de    : out    vl_logic;

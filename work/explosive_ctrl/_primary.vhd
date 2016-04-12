@@ -2,12 +2,16 @@ library verilog;
 use verilog.vl_types.all;
 entity explosive_ctrl is
     generic(
-        PRE_GUARDING_TIME: integer := 50000;
-        EXPLOSION_GUARDING_TIME: integer := 50000;
+        PRE_POWER_GUARDING_TIME: integer := 500;
+        PRE_POWER_FAIL_TIME: vl_notype;
+        EXPLOSION_GUARDING_TIME: vl_logic_vector(0 to 32) := (Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi1, Hi1, Hi0, Hi0, Hi1, Hi0);
         COMMAND_TYPE_EXPLODE: vl_logic_vector(0 to 7) := (Hi0, Hi0, Hi0, Hi0, Hi0, Hi1, Hi0, Hi1);
+        COMMAND_TYPE_CANCEL: vl_logic_vector(0 to 7) := (Hi0, Hi0, Hi0, Hi0, Hi0, Hi1, Hi1, Hi0);
+        COMMAND_TYPE_PRE_POWER: vl_logic_vector(0 to 7) := (Hi0, Hi0, Hi0, Hi0, Hi0, Hi1, Hi1, Hi1);
         IDLE            : integer := 1;
-        EXPLOSION       : integer := 2;
-        EXPLOSIVE_TIME  : integer := 50000
+        PRE_POWER       : integer := 2;
+        EXPLOSION       : integer := 3;
+        EXPLOSIVE_TIME  : integer := 1000
     );
     port(
         cd4514_d        : out    vl_logic_vector(3 downto 0);
@@ -32,10 +36,14 @@ entity explosive_ctrl is
         rst_n           : in     vl_logic
     );
     attribute mti_svvh_generic_type : integer;
-    attribute mti_svvh_generic_type of PRE_GUARDING_TIME : constant is 1;
+    attribute mti_svvh_generic_type of PRE_POWER_GUARDING_TIME : constant is 1;
+    attribute mti_svvh_generic_type of PRE_POWER_FAIL_TIME : constant is 3;
     attribute mti_svvh_generic_type of EXPLOSION_GUARDING_TIME : constant is 1;
     attribute mti_svvh_generic_type of COMMAND_TYPE_EXPLODE : constant is 1;
+    attribute mti_svvh_generic_type of COMMAND_TYPE_CANCEL : constant is 1;
+    attribute mti_svvh_generic_type of COMMAND_TYPE_PRE_POWER : constant is 1;
     attribute mti_svvh_generic_type of IDLE : constant is 1;
+    attribute mti_svvh_generic_type of PRE_POWER : constant is 1;
     attribute mti_svvh_generic_type of EXPLOSION : constant is 1;
     attribute mti_svvh_generic_type of EXPLOSIVE_TIME : constant is 1;
 end explosive_ctrl;

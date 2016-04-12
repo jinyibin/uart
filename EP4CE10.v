@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 `include "define.v"
-`define SIM
+//`define SIM
 
 module EP4CE10(
 	input  wire      clkin,  //50Mhz
@@ -67,11 +67,11 @@ wire [31:0]  explosion_status;
 
 
 //-------------------------------------------------------------------------------------------------------------
-//`ifdef SIM
-//parameter     RST_CNT_LIMIT = 100;
-//`else
+`ifdef SIM
+parameter     RST_CNT_LIMIT = 100;
+`else
 parameter     RST_CNT_LIMIT = 2<<26;
-//`endif
+`endif
 parameter     UART_CLK_DIVIDER = 8'd2;   // uart sampling clock=clk/UART_CLK_DIVIDER
 //---------------------generate global reset signal ------------------------------------------------------------
 
