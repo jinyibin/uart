@@ -46,7 +46,7 @@ parameter 	FRAME_HEAD1 = 8'hAA,
 				FRAME_HEAD3 = 8'hEB,
             FRAME_HEAD4 = 8'h90,
 				FRAME_HEAD5 = 8'h1D,
-            FRAME_HEAD6 = 8'h1B;
+            FRAME_HEAD6 = 8'h1B?
 	  
 //----------------------------------------------------------------------- 
   initial

@@ -72,80 +72,80 @@ assign        uart_chip_re_n = 0;
 
 always@(posedge clk)
 	if(!rst_n) begin
-		uart_chip_di <= #`D 1;
-		uart_chip_de <= #`D 1; 
-		uart_rx      <= #`D 1;
-		uart_rx_d1   <= #`D 1;
-		uart_rx_d2   <= #`D 1;
-		uart_rx_d3   <= #`D 1;
+		uart_chip_di <= 1'd1;
+		uart_chip_de <= 1'd1; 
+		uart_rx      <= 1'd1;
+		uart_rx_d1   <= 1'd1;
+		uart_rx_d2   <= 1'd1;
+		uart_rx_d3   <= 1'd1;
 	end else if(uart_clk)begin  //buffer the rx from transceiver output
-		uart_chip_di <= #`D uart_tx;
-		uart_chip_de <= #`D uart_tx_en; 
-		uart_rx      <= #`D uart_chip_ro;
-		uart_rx_d1   <= #`D uart_rx;
-		uart_rx_d2   <= #`D uart_rx_d1;
-		uart_rx_d3   <= #`D uart_rx_d2;
+		uart_chip_di <= uart_tx;
+		uart_chip_de <= uart_tx_en; 
+		uart_rx      <= uart_chip_ro;
+		uart_rx_d1   <= uart_rx;
+		uart_rx_d2   <= uart_rx_d1;
+		uart_rx_d3   <= uart_rx_d2;
 	end
 
 /*------------------------uart transmit-----------------------------*/
 always@(posedge clk)
 	if(!rst_n) begin
-			uart_tx              <= #`D 1; 
-			uart_tx_en           <= #`D 1; 
-			uart_tx_status       <= #`D 0;
+			uart_tx              <= 1'd1; 
+			uart_tx_en           <= 1'd1; 
+			uart_tx_status       <= 1'd0;
 			uart_tx_state        <= #`D IDLE;
-			uart_tx_sample_timer <= #`D 0;
-			uart_tx_bit_counter  <= #`D 0;
-			uart_tx_data_reg     <= #`D 0;
-			uart_tx_over         <= #`D 0;
+			uart_tx_sample_timer <= 13'd0;
+			uart_tx_bit_counter  <= 3'd0;
+			uart_tx_data_reg     <= 8'd0;
+			uart_tx_over         <= 1'd0;
 	end else begin
 		case(uart_tx_state)
 			IDLE:
 				begin
-					uart_tx              <= #`D 1; 
-					uart_tx_en           <= #`D 1; 
-					uart_tx_status       <= #`D 0;
-					uart_tx_sample_timer <= #`D 0; 
-					uart_tx_bit_counter  <= #`D 0;
-					uart_tx_over         <= #`D 0;
+					uart_tx              <= 1'd1; 
+					uart_tx_en           <= 1'd1; 
+					uart_tx_status       <= 1'd0;
+					uart_tx_sample_timer <= 13'd0; 
+					uart_tx_bit_counter  <= 3'd0;
+					uart_tx_over         <= 1'd0;
 					if(uart_tx_data_ready) begin 
 						uart_tx_state    <= #`D START;
-						uart_tx_data_reg <= #`D uart_tx_data;
-						uart_tx_status   <= #`D 1;
+						uart_tx_data_reg <= uart_tx_data;
+						uart_tx_status   <= 1'd1;
 					end
 				end
 			START:
 				begin
-					uart_tx    <= #`D 0;
-					uart_tx_en <= #`D 1; 
+					uart_tx    <= 1'd0;
+					uart_tx_en <= 1'd1; 
 					if(uart_tx_sample_timer == TX_UART_BAUDRATE) begin 
-						uart_tx_sample_timer <= #`D 0;
+						uart_tx_sample_timer <= 13'd0;
 						uart_tx_state        <= #`D DATA; 
 					end else begin 
-						uart_tx_sample_timer <= uart_tx_sample_timer + 1; 
+						uart_tx_sample_timer <= uart_tx_sample_timer + 13'd1; 
 					end
 				end
 			DATA:
 				begin
 				   `ifdef LSB_FIRST
-					    uart_tx <= #`D uart_tx_data_reg[0];
+					    uart_tx <= uart_tx_data_reg[0];
 				   `else
-						 uart_tx <= #`D uart_tx_data_reg[7];
+						 uart_tx <= uart_tx_data_reg[7];
 					`endif
 					uart_tx_en <= #`D 1; 
 					if(uart_tx_sample_timer == TX_UART_BAUDRATE) begin 
-						uart_tx_sample_timer <= #`D 0;
-						uart_tx_bit_counter  <= uart_tx_bit_counter + 1;
+						uart_tx_sample_timer <= 13'd0;
+						uart_tx_bit_counter  <= uart_tx_bit_counter + 3'd1;
 						`ifdef LSB_FIRST
-						   uart_tx_data_reg <= #`D {1'b0,uart_tx_data_reg[7:1]};
+						   uart_tx_data_reg <= {1'b0,uart_tx_data_reg[7:1]};
 						`else
-				         uart_tx_data_reg <= #`D {uart_tx_data_reg[6:0],1'b0};
+				         uart_tx_data_reg <= {uart_tx_data_reg[6:0],1'b0};
 						`endif
 						if(uart_tx_bit_counter == 7) begin 
 							uart_tx_state <= #`D STOP; 
 						end 
 					end else begin 
-						uart_tx_sample_timer <= uart_tx_sample_timer + 1; 
+						uart_tx_sample_timer <= uart_tx_sample_timer + 13'd1; 
 					end
 				end
 			STOP:
@@ -160,12 +160,12 @@ always@(posedge clk)
 					end
                */					
 					if(uart_tx_sample_timer == TX_UART_BAUDRATE) begin 
-						uart_tx_sample_timer <= #`D 0;
+						uart_tx_sample_timer <= 13'd0; 
 						uart_tx_state        <= #`D IDLE;
 						uart_tx_over         <= #`D 1;
 						uart_tx_status       <= #`D 0; 
 					end else begin 
-						uart_tx_sample_timer <= uart_tx_sample_timer + 1; 
+						uart_tx_sample_timer <= uart_tx_sample_timer + 13'd1; 
 					end
 				end
 			default:
@@ -198,19 +198,19 @@ always@(posedge clk)
 		uart_rx_data_ready_d1<= #`D 0;	
 		uart_rx_err_d1       <= #`D 0; 
 		uart_rx_state        <= #`D IDLE;
-		uart_rx_sample_timer <= #`D 0;
-		uart_rx_bit_counter  <= #`D 0;
-		uart_rx_data_reg     <= #`D 0;
-		uart_rx_data         <= #`D 0;
+		uart_rx_sample_timer <= 13'd0;
+		uart_rx_bit_counter  <= 3'd0;
+		uart_rx_data_reg     <= 8'd0;
+		uart_rx_data         <= 8'd0;
 	end else if(uart_clk)begin
 		case(uart_rx_state)
 			IDLE:
 				begin
 					uart_rx_data_ready_d1 <= #`D 0;
 					uart_rx_err_d1       <= #`D 0;
-					uart_rx_sample_timer <= #`D 0;
-					uart_rx_bit_counter  <= #`D 0;
-					uart_rx_data_reg     <= #`D 0;
+					uart_rx_sample_timer <= 13'd0;
+					uart_rx_bit_counter  <= 3'd0;
+					uart_rx_data_reg     <= 8'd0;
 					//uart_rx_data         <= #`D 0;
 					if({uart_rx_d1, uart_rx_d2} == 2'b01) begin
 						uart_rx_state        <= #`D START;				
@@ -221,14 +221,14 @@ always@(posedge clk)
 				begin// sample rx at middle of bit,3 consecutive low level as a success start bit
 					if(uart_rx_sample_timer == UART_BAUDRATE_HALF && {uart_rx_d1, uart_rx_d2, uart_rx_d3} == 3'b000) begin
 						uart_rx_state        <= #`D DATA;
-						uart_rx_sample_timer <= #`D 0;
-						uart_rx_bit_counter  <= #`D 0;
+						uart_rx_sample_timer <= 13'd0;
+						uart_rx_bit_counter  <= 3'd0;
 					end else if(uart_rx_sample_timer == UART_BAUDRATE_HALF && {uart_rx_d1, uart_rx_d2, uart_rx_d3} != 3'b000) begin
 						uart_rx_state        <= #`D IDLE;
-						uart_rx_sample_timer <= #`D 0;
-						uart_rx_bit_counter  <= #`D 0;
+						uart_rx_sample_timer <= 13'd0;
+						uart_rx_bit_counter  <= 3'd0;
 					end else begin
-						uart_rx_sample_timer <= uart_rx_sample_timer+1;
+						uart_rx_sample_timer <= uart_rx_sample_timer + 13'd1;
 					end
 				end
 			DATA:
@@ -251,17 +251,17 @@ always@(posedge clk)
                   `endif						
 						endcase
 						`ifdef LSB_FIRST
-						   uart_rx_data_reg[6:0] <= #`D uart_rx_data_reg[7:1];
+						   uart_rx_data_reg[6:0] <= uart_rx_data_reg[7:1];
 						`else
-						   uart_rx_data_reg[7:1] <= #`D uart_rx_data_reg[6:0];
+						   uart_rx_data_reg[7:1] <= uart_rx_data_reg[6:0];
 	               `endif						
-						uart_rx_sample_timer  <= #`D 0;
-						uart_rx_bit_counter   <= uart_rx_bit_counter + 1;
+						uart_rx_sample_timer  <= 13'd0;
+						uart_rx_bit_counter   <= uart_rx_bit_counter + 3'd1;
 						if(uart_rx_bit_counter == 7) begin
 							uart_rx_state <= #`D STOP;
 						end
 					end else begin
-						uart_rx_sample_timer <=  uart_rx_sample_timer + 1;
+						uart_rx_sample_timer <=  uart_rx_sample_timer + 13'd1;
 					end
 				end
 			STOP:
@@ -276,7 +276,7 @@ always@(posedge clk)
 						uart_rx_data_ready_d1 <= #`D 1;
 						uart_rx_err_d1        <= #`D 1;
 					end else begin
-						uart_rx_sample_timer <= uart_rx_sample_timer + 1;
+						uart_rx_sample_timer <= uart_rx_sample_timer + 13'd1;
 					end
 				end
 			default:

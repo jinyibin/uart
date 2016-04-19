@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 `include "define.v"
-//`define SIM
+`define SIM
 
 module EP4CE10(
 	input  wire      clkin,  //50Mhz
@@ -52,18 +52,18 @@ wire         rs422_tx_data_main;
 wire         rs422_tx_ready_main;
 wire         rs422_tx_over_main;
 wire         command_rx_flag_main;   //high level pulse signal a received command
-wire [15:0]   command_rx_main;
-wire [47:0]  data_field_rx_main;
+wire [7:0]   command_rx_main;
+wire [31:0]  data_field_rx_main;
 wire         command_tx_over_main;
 wire         command_tx_status_main;
 wire         command_tx_flag_main;   //high level pulse signal a new command has arrived for transmiting
-wire [15:0]   command_tx_main;
-wire [47:0]  data_field_tx_main;
+wire [7:0]   command_tx_main;
+wire [31:0]  data_field_tx_main;
 
 wire [31:0]  version;
 
 wire [7:0]   explosion_err;
-wire [47:0]  explosion_status;
+wire [31:0]  explosion_status;
 
 
 //-------------------------------------------------------------------------------------------------------------
@@ -172,11 +172,11 @@ command_rw_main  cmd_main(
 								`ifdef SIM
 										.command_tx_ready(command_rx_flag_main),   //high level pulse signal a new command has arrived for transmiting
 										.command_tx(command_rx_main),
-										.data_field_tx(explosion_status),										
+										.data_field_tx(data_field_rx_main),										
 								`else
-										.command_tx_ready(command_rx_flag_main),   //high level pulse signal a new command has arrived for transmiting
+										.command_tx_ready(command_tx_flag_main),   //high level pulse signal a new command has arrived for transmiting
 										.command_tx(command_tx_main),
-										.data_field_tx(explosion_status),
+										.data_field_tx(data_field_tx_main),
 								`endif					 
 										.clk(clk),  
 										.uart_clk(uart_clk),          //uart sampling clock	,baudrate is calcurated according this clock

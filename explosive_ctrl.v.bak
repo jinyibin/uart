@@ -4,10 +4,10 @@
 --Description:  control the explosives according the input command
                 write explosive_en_reg to enable explosion of each channel,
 					 write explosive time reg to set the time of explosion
-					 check explosive_status to see if explosion is over
-
+					 check explosive_status[30:0] to see if explosion is over
+					 check explosive_status[31] to see if pre_power is over
 					 check err_reg to see if there is err
-					 minimum time of explosion is 1s
+					 minimum time of explosion is 2s
                 
 --History    :  2016-04-03  Created by Jin.                          
 
@@ -37,7 +37,8 @@ module explosive_ctrl(
 	input  wire      command_ready,     //high pulse signifies a new command
 	input  wire[15:0]command_type,
 	input  wire[31:0]command_parameter,
-	output reg [47:0]explosive_status,  //explosive status feedback
+	output reg [31:0]explosive_status,  //explosive status feedback,high level in bit n means channel n has been exploded
+	                                    //bit32 is pre power success status ,1 means pre power success
 	output reg [7:0] err_reg,               //error code
 		
 	input  wire      clk,
@@ -68,30 +69,29 @@ parameter  IDLE       = 3'd1,
 			  OVER       = 3'd4;
 parameter  EXPLOSIVE_TIME = 32'd50000000;//2 second explosion time base
 `endif
-parameter  FIRE_CHANNEL1_MASK_BIT = 0,
-           FIRE_CHANNEL2_MASK_BIT =1,
-			  FIRE_CHANNEL3_MASK_BIT =2,
-			  FIRE_CHANNEL4_MASK_BIT =3,
-			  FIRE_CHANNEL5_MASK_BIT =4,
-			  FIRE_CHANNEL6_MASK_BIT =5,
-			  FIRE_CHANNEL7_MASK_BIT =6,
-			  FIRE_CHANNEL8_MASK_BIT =7,
-			  FIRE_CHANNEL9_MASK_BIT =8,
-			  FIRE_CHANNEL10_MASK_BIT =9,
-			  FIRE_CHANNEL11_MASK_BIT =10,
-			  FIRE_CHANNEL12_MASK_BIT =11,
-			  FIRE_CHANNEL13_MASK_BIT =12,
-			  FIRE_CHANNEL14_MASK_BIT =13,
-			  FIRE_CHANNEL15_MASK_BIT =14,
-			  FIRE_CHANNEL16_MASK_BIT =15,
-			  FIRE_CHANNEL17_MASK_BIT =16,
-			  FIRE_CHANNEL18_MASK_BIT =17,
-			  FIRE_CHANNEL19_MASK_BIT =18,
-			  FIRE_CHANNEL20_MASK_BIT =19,
-           PRE_POWER_MASK_BIT  =20;
-			  
-parameter  ENABLE   =1'b1,
-           DISABLE  =1'b0;
+parameter  FIRE_CHANNEL1_MASK_BIT 0,
+           FIRE_CHANNEL2_MASK_BIT 1,
+			  FIRE_CHANNEL3_MASK_BIT 2,
+			  FIRE_CHANNEL4_MASK_BIT 3,
+			  FIRE_CHANNEL5_MASK_BIT 4,
+			  FIRE_CHANNEL6_MASK_BIT 5,
+			  FIRE_CHANNEL7_MASK_BIT 6,
+			  FIRE_CHANNEL8_MASK_BIT 7,
+			  FIRE_CHANNEL9_MASK_BIT 8,
+			  FIRE_CHANNEL10_MASK_BIT 9,
+			  FIRE_CHANNEL11_MASK_BIT 10,
+			  FIRE_CHANNEL12_MASK_BIT 11,
+			  FIRE_CHANNEL13_MASK_BIT 12,
+			  FIRE_CHANNEL14_MASK_BIT 13,
+			  FIRE_CHANNEL15_MASK_BIT 14,
+			  FIRE_CHANNEL16_MASK_BIT 15,
+			  FIRE_CHANNEL17_MASK_BIT 16,
+			  FIRE_CHANNEL18_MASK_BIT 17,
+			  FIRE_CHANNEL19_MASK_BIT 18,
+			  FIRE_CHANNEL20_MASK_BIT 19,
+           PRE_POWER_MASK_BIT  31;
+parameter  ENABLE   1'b1,
+           DISABLE  1'b0;
 //-------------------------------------------------------------------------------------------------------------			  
 reg [2:0] state;
 
@@ -123,7 +123,7 @@ always@(posedge clk)
 	   pre_power_guarding_time_cnt  <= 32'd0;
 		pre_power_fail_time_cnt      <= 32'd0;
 	end else if(state == PRE_POWER)begin
-		if(explosive_status[(PRE_POWER_MASK_BIT<<1)+1:PRE_POWER_MASK_BIT<<1]==2'b00)//pre power did not success
+		if(explosive_status[31]==1'b0)//pre power did not success
 		   pre_power_fail_time_cnt <= pre_power_fail_time_cnt + 32'd1;
 	   if(pre_power_on_ack_buf[1] == 1'b0)begin//
 	     if(pre_power_guarding_time_cnt <= PRE_POWER_GUARDING_TIME)
@@ -144,7 +144,7 @@ always@(posedge clk)
 		 explosive_en_reg   <= 32'd0;
 		 explosive_time_reg <= 8'd0;
 		 explosive_time_cnt <= 33'd0;
-		 explosive_status   <= 48'd0;
+		 explosive_status   <= 32'd0;
 		 pre_pwr_on         <= DISABLE;  
 		 pre_pwr_on_1       <= DISABLE;
 		 err_reg            <= 8'd0;  
@@ -162,25 +162,25 @@ always@(posedge clk)
 					  end 
 		        end
 		 PRE_POWER:begin
-						  if((command_ready==1)&&(command_parameter[PRE_POWER_MASK_BIT]==0))begin //cancel pre power,back to idle
-							  explosive_en_reg    <=  32'd0;
-							  explosive_time_reg  <=  8'd0;
-							  //explosive_status[31]<= 1'b0;
-							  state              <= IDLE;
-							  //explosive_status   <= {8'hFF,~command_parameter[23:0]} & explosive_status;
-						  end else if((command_ready==1)&&(command_parameter[19:0]!=0))begin//fire enabled in some channel
-							  explosive_en_reg       <=  {12'd0,command_parameter[19:0]};
+						  if((command_ready==1)&&(command_parameter[19:0]!=0))begin//fire enabled in some channel
+							  explosive_en_reg       <=  {8'd0,command_parameter[23:0]};
 							  //explosive_time_reg     <= command_parameter[31:24];
 							  explosive_time_reg     <= 0;
-							  //explosive_status[30:0] <= {7'h7F,~command_parameter[23:0]} & explosive_status[30:0];	
+							  explosive_status[30:0] <= {7'h7F,~command_parameter[23:0]} & explosive_status[30:0];	
 							  state                  <= EXPLOSION;
-						  //end else if((command_ready==1)&&(command_type==COMMAND_TYPE_CANCEL))begin //cancel pre power,back to idle				  
+						  //end else if((command_ready==1)&&(command_type==COMMAND_TYPE_CANCEL))begin //cancel pre power,back to idle
+						  end else if((command_ready==1)&&(command_parameter[PRE_POWER_MASK_BIT]==0))begin //cancel pre power,back to idle
+							  explosive_en_reg    <=  32'd0;
+							  explosive_time_reg  <=  8'd0;
+							  explosive_status[31]<= 1'b0;
+							  state              <= IDLE;
+							  //explosive_status   <= {8'hFF,~command_parameter[23:0]} & explosive_status;					  
 						  end else if(pre_power_guarding_time_cnt == PRE_POWER_GUARDING_TIME)begin //make sure time between consecutive channels is no less than EXPLOSION_GUARDING_TIME
-							  explosive_status[(PRE_POWER_MASK_BIT<<1)+1:PRE_POWER_MASK_BIT<<1] <= 2'b01; //set the pre power success bit
+							  explosive_status[31] <= 1'b1; //set the pre power success bit
 						  end else if(pre_power_fail_time_cnt > PRE_POWER_FAIL_TIME)begin //pre power ack fail,return to idle
 							  explosive_en_reg    <=  32'd0;
 							  explosive_time_reg  <=  8'd0;
-							  explosive_status[(PRE_POWER_MASK_BIT<<1)+1:PRE_POWER_MASK_BIT<<1]<=  2'b11;
+							  explosive_status[31]<=  1'b0;
 							  err_reg             <=  8'd1;  
 							  state               <=  IDLE;
 						  end  
@@ -192,7 +192,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;							
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over
-								   explosive_status[(FIRE_CHANNEL1_MASK_BIT<<1)+1:FIRE_CHANNEL1_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL1_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL1_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;								
 								end else begin
@@ -205,7 +205,7 @@ always@(posedge clk)
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over
 
-								   explosive_status[(FIRE_CHANNEL2_MASK_BIT<<1)+1:FIRE_CHANNEL2_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL2_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL2_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -218,7 +218,7 @@ always@(posedge clk)
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over
 
-								   explosive_status[(FIRE_CHANNEL3_MASK_BIT<<1)+1:FIRE_CHANNEL3_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL3_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL3_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -231,7 +231,7 @@ always@(posedge clk)
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over
 
-								   explosive_status[(FIRE_CHANNEL4_MASK_BIT<<1)+1:FIRE_CHANNEL4_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL4_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL4_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -245,7 +245,7 @@ always@(posedge clk)
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;					
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over
 
-								   explosive_status[(FIRE_CHANNEL5_MASK_BIT<<1)+1:FIRE_CHANNEL5_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL5_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL5_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -258,7 +258,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;	
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL6_MASK_BIT<<1)+1:FIRE_CHANNEL6_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL6_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL6_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -271,7 +271,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;	
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL7_MASK_BIT<<1)+1:FIRE_CHANNEL7_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL7_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL7_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -284,7 +284,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;			
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;				
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL8_MASK_BIT<<1)+1:FIRE_CHANNEL8_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL8_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL8_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -297,7 +297,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;		
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;					
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL9_MASK_BIT<<1)+1:FIRE_CHANNEL9_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL9_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL9_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -310,7 +310,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;	
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL10_MASK_BIT<<1)+1:FIRE_CHANNEL10_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL10_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL10_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -323,7 +323,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;	
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL11_MASK_BIT<<1)+1:FIRE_CHANNEL11_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL11_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL11_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -336,7 +336,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;	
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL12_MASK_BIT<<1)+1:FIRE_CHANNEL12_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL12_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL12_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -349,7 +349,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;	
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL13_MASK_BIT<<1)+1:FIRE_CHANNEL13_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL13_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL13_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -362,7 +362,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;							
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL14_MASK_BIT<<1)+1:FIRE_CHANNEL14_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL14_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL14_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -375,7 +375,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;		
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;					
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL15_MASK_BIT<<1)+1:FIRE_CHANNEL15_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL15_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL15_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -388,7 +388,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;		
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;					
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL16_MASK_BIT<<1)+1:FIRE_CHANNEL16_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL16_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL16_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -401,7 +401,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;		
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;					
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL17_MASK_BIT<<1)+1:FIRE_CHANNEL17_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL17_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL17_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -414,7 +414,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;		
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;					
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL18_MASK_BIT<<1)+1:FIRE_CHANNEL18_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL18_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL18_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -427,7 +427,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;		
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;					
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL19_MASK_BIT<<1)+1:FIRE_CHANNEL19_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL19_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL19_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
@@ -440,7 +440,7 @@ always@(posedge clk)
 	                        channel	            <= 8'hff;	
 	                        explosive_time_cnt <= explosive_time_cnt + 33'd1;						
 								end else if(explosive_time_cnt == (EXPLOSIVE_TIME<<explosive_time_reg)+EXPLOSION_GUARDING_TIME)begin//explosion over,reset status reg
-								   explosive_status[(FIRE_CHANNEL20_MASK_BIT<<1)+1:FIRE_CHANNEL20_MASK_BIT<<1]  <= 2'b01;//set status bit
+								   explosive_status[FIRE_CHANNEL20_MASK_BIT]  <= 1'b1;//set status bit
 						         explosive_en_reg[FIRE_CHANNEL20_MASK_BIT]  <= 1'b0;//clear en reggiter
 									explosive_time_cnt   <= 33'd0;									
 								end else begin
