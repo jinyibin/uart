@@ -70,7 +70,7 @@ wire [47:0]  explosion_status;
 `ifdef SIM
 parameter     RST_CNT_LIMIT = 100;
 `else
-parameter     RST_CNT_LIMIT = 2<<26;
+parameter     RST_CNT_LIMIT = 2<<27;
 `endif
 parameter     UART_CLK_DIVIDER = 8'd2;   // uart sampling clock=clk/UART_CLK_DIVIDER
 //---------------------generate global reset signal ------------------------------------------------------------
@@ -156,6 +156,241 @@ always @ (posedge clk)
 					end						
 	  end 
 //-------------------------------------------------------------------------------------------------------------
+parameter SENSOR_PWR_MASK_BIT = 21,
+          MOTOR_PWR_MASK_BIT =  22,
+			 CAMERA_RST1_MASK_BIT =24,
+			 CAMERA_RST2_MASK_BIT =25,
+			 CAMERA_RST3_MASK_BIT =26,
+			 CAMERA_RST4_MASK_BIT =27,
+			 CAMERA_RST5_MASK_BIT =28;
+
+//**********************************************************************			 
+always @(posedge clk)
+    if(!rst_n)begin
+			sensor_pwr_en <= 1'd0;
+			motor_pwr_en  <= 1'd0;
+	 end else if(command_rx_flag_main)begin
+         sensor_pwr_en <= data_field_rx_main[SENSOR_PWR_MASK_BIT];
+			motor_pwr_en  <= data_field_rx_main[MOTOR_PWR_MASK_BIT];
+    end
+//**********************************************************************	
+               /*camera control */
+`ifdef SIM			 
+parameter CAMERA_PWR_PULSE_TIME =5000;
+`else
+parameter CAMERA_PWR_PULSE_TIME =50000000;
+`endif
+parameter IDLE = 1, WAIT_FOR_PWR = 2,OPEN = 3;
+					
+reg [31:0]  camera_pwr_on_pulse_cnt0;
+reg  [1:0]  camera_state0;
+always @(posedge clk)
+    if(!rst_n)begin  
+			camera_rst[0]            <= 1'd0;
+			camera_pwr_on_pulse_cnt0 <= 32'd0;
+			camera_state0            <= OPEN;
+			camera_pwr_en[0]         <= 1'd1;
+	 end else begin
+	      case(camera_state0)
+			           IDLE:begin
+										camera_rst[0]            <= 1'd0;
+										camera_pwr_on_pulse_cnt0 <= 32'd0;
+										if(camera_pwr_en[0])begin//camera already open
+										    if(command_rx_flag_main&(~data_field_rx_main[CAMERA_RST1_MASK_BIT]))begin//receive close camera command
+											    camera_state0 <= IDLE;
+											    camera_pwr_en[0]   <= 1'd0;	
+											 end 
+										end else begin // camera closed
+										    if(command_rx_flag_main&data_field_rx_main[CAMERA_RST1_MASK_BIT])//receive open camera command
+											    camera_state0 <= WAIT_FOR_PWR;										
+										end												 
+								 end
+				WAIT_FOR_PWR:begin
+								      camera_pwr_en[0]         <= 1'd1;
+										if(camera_pwr_on_pulse_cnt0==(CAMERA_PWR_PULSE_TIME<<2))begin
+											camera_state0 <= OPEN;	
+											camera_pwr_on_pulse_cnt0 <= 32'd0;											
+										end else
+											camera_pwr_on_pulse_cnt0 <= camera_pwr_on_pulse_cnt0 + 32'd1;									 
+								 end
+				        OPEN:begin
+										camera_rst[0]            <= 1'd1;
+										if(camera_pwr_on_pulse_cnt0==CAMERA_PWR_PULSE_TIME)
+											camera_state0 <= IDLE;	
+										else
+											camera_pwr_on_pulse_cnt0 <= camera_pwr_on_pulse_cnt0 + 32'd1;				
+				             end
+			        default:  camera_state0 <= IDLE;			
+			endcase
+    end	
+	
+reg [31:0]  camera_pwr_on_pulse_cnt1;
+reg  [1:0]  camera_state1;
+always @(posedge clk)
+    if(!rst_n)begin  
+			camera_rst[1]            <= 1'd0;
+			camera_pwr_on_pulse_cnt1 <= 32'd0;
+			camera_state1            <= OPEN;
+			camera_pwr_en[1]         <= 1'd1;
+	 end else begin
+	      case(camera_state1)
+			           IDLE:begin
+										camera_rst[1]            <= 1'd0;
+										camera_pwr_on_pulse_cnt1 <= 32'd0;
+										if(camera_pwr_en[1])begin//camera already open
+										    if(command_rx_flag_main&(~data_field_rx_main[CAMERA_RST2_MASK_BIT]))begin//receive close camera command
+											    camera_state1 <= IDLE;	
+												 camera_pwr_en[1]   <= 1'd0; 
+											 end
+										end else begin // camera closed
+										    if(command_rx_flag_main&data_field_rx_main[CAMERA_RST2_MASK_BIT])//receive open camera command
+											    camera_state1 <= WAIT_FOR_PWR;										
+										end												 
+								 end
+				WAIT_FOR_PWR:begin
+								      camera_pwr_en[1]         <= 1'd1;
+										if(camera_pwr_on_pulse_cnt1==(CAMERA_PWR_PULSE_TIME<<2))begin
+											camera_state1 <= OPEN;	
+											camera_pwr_on_pulse_cnt1 <= 32'd0;											
+										end else
+											camera_pwr_on_pulse_cnt1 <= camera_pwr_on_pulse_cnt1 + 32'd1;									 
+								 end
+				        OPEN:begin
+										camera_rst[1]            <= 1'd1;
+										if(camera_pwr_on_pulse_cnt1==CAMERA_PWR_PULSE_TIME)
+											camera_state1 <= IDLE;		
+										else
+											camera_pwr_on_pulse_cnt1 <= camera_pwr_on_pulse_cnt1 + 32'd1;				
+				             end
+			        default:  camera_state1 <= IDLE;				
+			endcase
+    end
+	 
+reg [31:0]  camera_pwr_on_pulse_cnt2;
+reg  [1:0]  camera_state2;
+always @(posedge clk)
+    if(!rst_n)begin  
+			camera_rst[2]            <= 1'd0;
+			camera_pwr_on_pulse_cnt2 <= 32'd0;
+			camera_state2            <= OPEN;
+			camera_pwr_en[2]         <= 1'd1;
+	 end else begin
+	      case(camera_state2)
+			           IDLE:begin
+										camera_rst[2]            <= 1'd0;
+										camera_pwr_on_pulse_cnt2 <= 32'd0;
+										if(camera_pwr_en[2])begin//camera already open
+										    if(command_rx_flag_main&(~data_field_rx_main[CAMERA_RST3_MASK_BIT]))begin//receive close camera command
+											    camera_pwr_en[2]   <= 1'd0;
+											    camera_state2      <= IDLE;	
+												end 
+										end else begin // camera closed
+										    if(command_rx_flag_main&data_field_rx_main[CAMERA_RST3_MASK_BIT])//receive open camera command
+											    camera_state2 <= WAIT_FOR_PWR;										
+										end												 
+								 end
+				WAIT_FOR_PWR:begin
+								      camera_pwr_en[2]         <= 1'd1;
+										if(camera_pwr_on_pulse_cnt2==(CAMERA_PWR_PULSE_TIME<<2))begin
+											camera_state2 <= OPEN;	
+											camera_pwr_on_pulse_cnt2 <= 32'd0;											
+										end else
+											camera_pwr_on_pulse_cnt2 <= camera_pwr_on_pulse_cnt2 + 32'd1;									 
+								 end
+				        OPEN:begin
+										camera_rst[2]            <= 1'd1;
+										if(camera_pwr_on_pulse_cnt2==CAMERA_PWR_PULSE_TIME)
+											camera_state2 <= IDLE;		
+										else
+											camera_pwr_on_pulse_cnt2 <= camera_pwr_on_pulse_cnt2 + 32'd1;				
+				             end
+			        default:  camera_state2 <= IDLE;				
+			endcase
+    end
+reg [31:0]  camera_pwr_on_pulse_cnt3;
+reg  [1:0]  camera_state3;
+always @(posedge clk)
+    if(!rst_n)begin  
+			camera_rst[3]            <= 1'd0;
+			camera_pwr_on_pulse_cnt3 <= 32'd0;
+			camera_state3            <= OPEN;
+			camera_pwr_en[3]         <= 1'd1;
+	 end else begin
+	      case(camera_state3)
+			           IDLE:begin
+										camera_rst[3]            <= 1'd0;
+										camera_pwr_on_pulse_cnt3 <= 32'd0;
+										if(camera_pwr_en[3])begin//camera already open
+										    if(command_rx_flag_main&(~data_field_rx_main[CAMERA_RST4_MASK_BIT]))begin//receive close camera command
+											    camera_state3 <= IDLE;	
+												camera_pwr_en[3]   <= 1'd0; 
+											 end
+										end else begin // camera closed
+										    if(command_rx_flag_main&data_field_rx_main[CAMERA_RST4_MASK_BIT])//receive open camera command
+											    camera_state3 <= WAIT_FOR_PWR;										
+										end												 
+								 end
+				WAIT_FOR_PWR:begin
+								      camera_pwr_en[3]         <= 1'd1;
+										if(camera_pwr_on_pulse_cnt3==(CAMERA_PWR_PULSE_TIME<<2))begin
+											camera_state3 <= OPEN;	
+											camera_pwr_on_pulse_cnt3 <= 32'd0;											
+										end else
+											camera_pwr_on_pulse_cnt3 <= camera_pwr_on_pulse_cnt3 + 32'd1;									 
+								 end
+				        OPEN:begin
+										camera_rst[3]            <= 1'd1;
+										if(camera_pwr_on_pulse_cnt3==CAMERA_PWR_PULSE_TIME)
+											camera_state3 <= IDLE;		
+										else
+											camera_pwr_on_pulse_cnt3 <= camera_pwr_on_pulse_cnt3 + 32'd1;				
+				             end
+			        default:  camera_state3 <= IDLE;			
+			endcase
+    end
+reg [31:0]  camera_pwr_on_pulse_cnt4;
+reg  [1:0]  camera_state4;
+always @(posedge clk)
+    if(!rst_n)begin  
+			camera_rst[4]            <= 1'd0;
+			camera_pwr_on_pulse_cnt4 <= 32'd0;
+			camera_state4            <= OPEN;
+			camera_pwr_en[4]         <= 1'd1;
+	 end else begin
+	      case(camera_state4)
+			           IDLE:begin
+										camera_rst[4]            <= 1'd0;
+										camera_pwr_on_pulse_cnt4 <= 32'd0;
+										if(camera_pwr_en[4])begin//camera already open
+										    if(command_rx_flag_main&(~data_field_rx_main[CAMERA_RST5_MASK_BIT]))begin//receive close camera command
+											    camera_state4 <= IDLE;	
+												camera_pwr_en[4]   <= 1'd0; 
+											 end
+										end else begin // camera closed
+										    if(command_rx_flag_main&data_field_rx_main[CAMERA_RST5_MASK_BIT])//receive open camera command
+											    camera_state4 <= WAIT_FOR_PWR;										
+										end												 
+								 end
+				WAIT_FOR_PWR:begin
+								      camera_pwr_en[4]         <= 1'd1;
+										if(camera_pwr_on_pulse_cnt4==CAMERA_PWR_PULSE_TIME)begin
+											camera_state4 <= OPEN;	
+											camera_pwr_on_pulse_cnt4 <= 32'd0;											
+										end else
+											camera_pwr_on_pulse_cnt4 <= camera_pwr_on_pulse_cnt4 + 32'd1;									 
+								 end
+				        OPEN:begin
+										camera_rst[4]            <= 1'd1;
+										if(camera_pwr_on_pulse_cnt4==(CAMERA_PWR_PULSE_TIME<<2))
+											camera_state4 <= IDLE;		
+										else
+											camera_pwr_on_pulse_cnt4 <= camera_pwr_on_pulse_cnt4 + 32'd1;				
+				             end
+			        default:  camera_state4 <= IDLE;			
+			endcase
+    end
+
+//-------------------------------------------------------------------------------------------------------------
 	  
 command_rw_main  cmd_main(
 										.uart_chip_de(rs422_de_main),      //uart transceiver chip transmit enable
@@ -176,7 +411,7 @@ command_rw_main  cmd_main(
 								`else
 										.command_tx_ready(command_rx_flag_main),   //high level pulse signal a new command has arrived for transmiting
 										.command_tx(command_tx_main),
-										.data_field_tx(explosion_status),
+										.data_field_tx({4'd0,motor_pwr_en,sensor_pwr_en,explosion_status[41:0]}),
 								`endif					 
 										.clk(clk),  
 										.uart_clk(uart_clk),          //uart sampling clock	,baudrate is calcurated according this clock

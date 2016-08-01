@@ -82,7 +82,7 @@ parameter   RX_TIME_OUT_PROTECTION = 32'd100000,	//guarding time between consecu
 `ifdef SIM
 				TX_GUARDING_TIME       = 32'd500;
 `else 				
-            TX_GUARDING_TIME       = 32'd50000000;    //wait TX_GUARDING_TIME * clk cycles before new transmit
+            TX_GUARDING_TIME       = 32'd5000;    //wait TX_GUARDING_TIME * clk cycles before new transmit
 `endif				
 //-----------------------------------command transmit----------------------------------------------------------
 reg  [4:0]   state_tx;
@@ -297,7 +297,7 @@ always @ (posedge clk)
 						  crc_en_tx    <= 1'b1;
 					  end 
                  if(uart_tx_over)begin
-					     state_tx     <=  CRC_H;
+					     state_tx     <=  BYTE5;
 						end		 
 		         end
 		 BYTE5  :begin
@@ -315,7 +315,7 @@ always @ (posedge clk)
 						  crc_en_tx    <= 1'b1;
 					  end 
                  if(uart_tx_over)begin
-					     state_tx     <=  CRC_H;
+					     state_tx     <=  BYTE6;
 						end		 
 		         end
 		 BYTE6  :begin

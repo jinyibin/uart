@@ -46,7 +46,7 @@ parameter 	FRAME_HEAD1 = 8'hAA,
 				FRAME_HEAD3 = 8'hEB,
             FRAME_HEAD4 = 8'h90,
 				FRAME_HEAD5 = 8'h1D,
-            FRAME_HEAD6 = 8'h1B?
+            FRAME_HEAD6 = 8'h1B;
 	  
 //----------------------------------------------------------------------- 
   initial
@@ -130,11 +130,11 @@ parameter 	FRAME_HEAD1 = 8'hAA,
        uart_tx(8'h00);
        uart_tx(8'h00);
        uart_tx(8'h10);
+       uart_tx(8'h1f);
        uart_tx(8'h0);
        uart_tx(8'h0);
-       uart_tx(8'h0);
-       uart_tx(8'h0b);
-       uart_tx(8'h54);
+       uart_tx(8'h1d);
+       uart_tx(8'h35);
        #10000;
        uart_tx(FRAME_HEAD1);
        uart_tx(FRAME_HEAD2);

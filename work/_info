@@ -4,174 +4,155 @@ K3
 cModel Technology
 Z0 dE:\FPGA_workspace\EP4CE10\uart
 vcommand_rw_main
-Z1 IdLe@6NJ;MUYzFAYoHTO9R1
-Z2 VfcPU9Y_ni4WbMi9;2VYBA1
-Z3 dE:\FPGA_workspace\EP4CE10\uart
-Z4 w1461055105
-Z5 8E:/FPGA_workspace/EP4CE10/uart/command_rw_main.v
-Z6 FE:/FPGA_workspace/EP4CE10/uart/command_rw_main.v
-L0 18
-Z7 OV;L;10.1d;51
-r1
-31
-Z8 !s90 -reportprogress|300|-work|work|E:/FPGA_workspace/EP4CE10/uart/command_rw_main.v|
-Z9 o-work work -O0
 !i10b 1
-Z10 !s100 >]iSE>cVmnDb:VV7@9n4g0
+!s100 3XA:XC6eRCACD0cMdT9;]0
+Ig>@F5eZW6UQ_YIN?ZKDMo2
+Z1 VfcPU9Y_ni4WbMi9;2VYBA1
+Z2 dE:\FPGA_workspace\EP4CE10\uart
+w1461133252
+Z3 8E:/FPGA_workspace/EP4CE10/uart/command_rw_main.v
+Z4 FE:/FPGA_workspace/EP4CE10/uart/command_rw_main.v
+L0 18
+Z5 OV;L;10.1d;51
+r1
 !s85 0
-Z11 !s108 1461055108.657000
-Z12 !s107 define.v|E:/FPGA_workspace/EP4CE10/uart/command_rw_main.v|
+31
+!s108 1461136521.422000
+!s107 define.v|E:/FPGA_workspace/EP4CE10/uart/command_rw_main.v|
+!s90 -reportprogress|300|-work|work|-O0|E:/FPGA_workspace/EP4CE10/uart/command_rw_main.v|
 !s101 -O0
+Z6 o-work work -O0
 vcrc_16
-Z13 !s100 eX:`mJHn1C6VOYihlcbiZ1
-Z14 I4GbNliKRZF;@^fOJYn7TT0
-Z15 VaKEmNZ07]X[i7a0L9LEOP3
-R3
-Z16 w1461049750
-Z17 8E:/FPGA_workspace/EP4CE10/uart/crc_16.v
-Z18 FE:/FPGA_workspace/EP4CE10/uart/crc_16.v
+Z7 !s100 eX:`mJHn1C6VOYihlcbiZ1
+Z8 I4GbNliKRZF;@^fOJYn7TT0
+Z9 VaKEmNZ07]X[i7a0L9LEOP3
+R2
+Z10 w1461049750
+Z11 8E:/FPGA_workspace/EP4CE10/uart/crc_16.v
+Z12 FE:/FPGA_workspace/EP4CE10/uart/crc_16.v
 L0 11
-R7
+R5
 r1
 31
-Z19 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/crc_16.v|
-R9
-Z20 !s108 1461055093.146000
-Z21 !s107 E:/FPGA_workspace/EP4CE10/uart/crc_16.v|
+R6
+Z13 !s108 1461120178.796000
+Z14 !s107 E:/FPGA_workspace/EP4CE10/uart/crc_16.v|
+Z15 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/crc_16.v|
 !i10b 1
 !s85 0
 !s101 -O0
 vEP4CE10
-Z22 !s100 mJ==I:L4ePYKYOdM9l>Em0
-Z23 I1mkAQ:K8iR]j[Yo45lW<43
-Z24 V[N>Tei:O<BM8CgB3h=Jo_1
-R3
-Z25 w1461053311
-Z26 8E:/FPGA_workspace/EP4CE10/uart/EP4CE10.v
-Z27 FE:/FPGA_workspace/EP4CE10/uart/EP4CE10.v
+Z16 IeRIfP4UAl`mZe8LH:`z6l3
+Z17 Vm=mU_^Yozd?7502HZDiYf0
+R2
+Z18 w1461136369
+Z19 8E:/FPGA_workspace/EP4CE10/uart/EP4CE10.v
+Z20 FE:/FPGA_workspace/EP4CE10/uart/EP4CE10.v
 L0 5
-R7
+R5
 r1
 31
-Z28 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/EP4CE10.v|
-R9
-Z29 n@e@p4@c@e10
-Z30 !s108 1461055093.412000
-Z31 !s107 define.v|E:/FPGA_workspace/EP4CE10/uart/EP4CE10.v|
+Z21 !s90 -reportprogress|300|-work|work|-O0|E:/FPGA_workspace/EP4CE10/uart/EP4CE10.v|
+R6
+Z22 n@e@p4@c@e10
+Z23 !s100 U[omO6F172W__:gfek`l40
+Z24 !s108 1461136517.733000
+Z25 !s107 define.v|E:/FPGA_workspace/EP4CE10/uart/EP4CE10.v|
 !i10b 1
 !s85 0
 !s101 -O0
 vexplosive_ctrl
-!i10b 1
-!s100 h>^CmILhNfS3;69NzO?8S3
-Imzj7<7S:j:BKSAFXkjjK?0
-Z32 VD19GUF<cz9L;TZ]YLfUE31
-R3
-w1461056397
-Z33 8E:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v
-Z34 FE:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v
+Z26 !s100 @;SBQFdh^3gDDXdG0VfiI1
+Z27 IQf@d8aMN@P2WcDQ;eEC@L2
+Z28 VD19GUF<cz9L;TZ]YLfUE31
+R2
+Z29 w1461057520
+Z30 8E:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v
+Z31 FE:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v
 L0 18
-R7
+R5
 r1
+31
+R6
+!i10b 1
 !s85 0
-31
-!s108 1461056411.048000
-!s107 define.v|E:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v|
-!s90 -reportprogress|300|-work|work|E:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v|
+Z32 !s108 1461136519.624000
+Z33 !s107 define.v|E:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v|
+Z34 !s90 -reportprogress|300|-work|work|-O0|E:/FPGA_workspace/EP4CE10/uart/explosive_ctrl.v|
 !s101 -O0
-R9
 vpll
-Z35 !s100 R?VKV<@h9i`oZkJ?cjRWU1
-Z36 I2Bf:9Aeg_8?dfePDJX1V[3
-Z37 VYgSHNCM?nBg`07nDCX6H00
-R3
-Z38 w1460001414
-Z39 8E:/FPGA_workspace/EP4CE10/pll.v
-Z40 FE:/FPGA_workspace/EP4CE10/pll.v
+Z35 I2Bf:9Aeg_8?dfePDJX1V[3
+Z36 VYgSHNCM?nBg`07nDCX6H00
+R2
+Z37 w1460001414
+Z38 8E:/FPGA_workspace/EP4CE10/pll.v
+Z39 FE:/FPGA_workspace/EP4CE10/pll.v
 L0 39
-R7
+R5
 r1
 31
+R6
+Z40 !s100 R?VKV<@h9i`oZkJ?cjRWU1
 Z41 !s90 -reportprogress|300|-work|work|E:/FPGA_workspace/EP4CE10/pll.v|
-R9
 Z42 !s108 1461050089.264000
 Z43 !s107 E:/FPGA_workspace/EP4CE10/pll.v|
 !i10b 1
 !s85 0
 !s101 -O0
 vtest_top
-Z44 !s100 ]LQV_n`e0_heH>2zbR=6Z0
-Z45 I?[W]Oz;UOInf9>PdD0:o73
+Z44 !s100 1aj8AR;_:JI4<aZA[m:8h2
+Z45 I5bQ8HMdP^zF108_Zkn_470
 Z46 Vka=C@G:>0o2O3fQ2LKn311
-R3
-Z47 w1461055085
+R2
+Z47 w1461116030
 Z48 8E:/FPGA_workspace/EP4CE10/uart/test_top.v
 Z49 FE:/FPGA_workspace/EP4CE10/uart/test_top.v
 L0 3
-R7
+R5
 r1
 31
-R9
-Z50 !s108 1461055093.708000
+R6
+Z50 !s108 1461120179.396000
 Z51 !s107 E:/FPGA_workspace/EP4CE10/uart/test_top.v|
 Z52 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/test_top.v|
 !i10b 1
 !s85 0
 !s101 -O0
-vtop
-Z53 !s100 JhMmQeCd_hTImBM216;O63
-Z54 IDL<T6XPVa71oRI^mC<3Im2
-Z55 VM<2NROi67ng2=H?;U5OO[2
-R3
-Z56 w1459906233
-Z57 8E:/FPGA_workspace/EP4CE10/uart/top.v
-Z58 FE:/FPGA_workspace/EP4CE10/uart/top.v
-L0 4
-R7
-r1
-31
-Z59 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/top.v|
-R9
-Z60 !s108 1461055093.864000
-Z61 !s107 define.v|E:/FPGA_workspace/EP4CE10/uart/top.v|
-!i10b 1
-!s85 0
-!s101 -O0
 vuart_transceiver
-Z62 !s100 z9V?VccWR;ETc^9obocRT2
-Z63 IJQNiA4jTGbCJCTB0ej<P61
-Z64 VezNz4YTYMK7@UTm:]mo=W2
-R3
-Z65 w1460007745
-Z66 8E:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v
-Z67 FE:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v
+Z53 !s100 ?K1SXjU_UFE[_GPc:>CiS2
+Z54 Innf5h]WDP916[Ua4Y36i70
+Z55 VezNz4YTYMK7@UTm:]mo=W2
+R2
+Z56 w1461058362
+Z57 8E:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v
+Z58 FE:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v
 L0 14
-R7
+R5
 r1
 31
-Z68 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v|
-R9
-Z69 !s108 1461055093.989000
-Z70 !s107 define.v|E:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v|
+Z59 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v|
+R6
+Z60 !s108 1461120179.546000
+Z61 !s107 define.v|E:/FPGA_workspace/EP4CE10/uart/uart_transceiver.v|
 !i10b 1
 !s85 0
 !s101 -O0
 vversion_reg
-Z71 !s100 m8b]bW4h567X<S>fdnmAm0
-Z72 I2k^SI8j?[V]ZI9ITb6P`U2
-Z73 ViMQ=z[?iAznRd9LY0EhWB1
-R3
-R56
-Z74 8E:/FPGA_workspace/EP4CE10/uart/version_reg.v
-Z75 FE:/FPGA_workspace/EP4CE10/uart/version_reg.v
+Z62 !s100 m8b]bW4h567X<S>fdnmAm0
+Z63 I2k^SI8j?[V]ZI9ITb6P`U2
+Z64 ViMQ=z[?iAznRd9LY0EhWB1
+R2
+Z65 w1459906233
+Z66 8E:/FPGA_workspace/EP4CE10/uart/version_reg.v
+Z67 FE:/FPGA_workspace/EP4CE10/uart/version_reg.v
 L0 1
-R7
+R5
 r1
 31
-Z76 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/version_reg.v|
-R9
-Z77 !s108 1461055094.145000
-Z78 !s107 E:/FPGA_workspace/EP4CE10/uart/version_reg.v|
+Z68 !s90 -reportprogress|30|-work|work|E:/FPGA_workspace/EP4CE10/uart/version_reg.v|
+R6
+Z69 !s108 1461120179.725000
+Z70 !s107 E:/FPGA_workspace/EP4CE10/uart/version_reg.v|
 !i10b 1
 !s85 0
 !s101 -O0

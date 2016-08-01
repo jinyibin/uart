@@ -3,7 +3,18 @@ use verilog.vl_types.all;
 entity EP4CE10 is
     generic(
         RST_CNT_LIMIT   : integer := 100;
-        UART_CLK_DIVIDER: vl_logic_vector(0 to 7) := (Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi1, Hi0)
+        UART_CLK_DIVIDER: vl_logic_vector(0 to 7) := (Hi0, Hi0, Hi0, Hi0, Hi0, Hi0, Hi1, Hi0);
+        SENSOR_PWR_MASK_BIT: integer := 21;
+        MOTOR_PWR_MASK_BIT: integer := 22;
+        CAMERA_RST1_MASK_BIT: integer := 24;
+        CAMERA_RST2_MASK_BIT: integer := 25;
+        CAMERA_RST3_MASK_BIT: integer := 26;
+        CAMERA_RST4_MASK_BIT: integer := 27;
+        CAMERA_RST5_MASK_BIT: integer := 28;
+        CAMERA_PWR_PULSE_TIME: integer := 5000;
+        IDLE            : integer := 1;
+        WAIT_FOR_PWR    : integer := 2;
+        \OPEN\          : integer := 3
     );
     port(
         clkin           : in     vl_logic;
@@ -35,4 +46,15 @@ entity EP4CE10 is
     attribute mti_svvh_generic_type : integer;
     attribute mti_svvh_generic_type of RST_CNT_LIMIT : constant is 1;
     attribute mti_svvh_generic_type of UART_CLK_DIVIDER : constant is 1;
+    attribute mti_svvh_generic_type of SENSOR_PWR_MASK_BIT : constant is 1;
+    attribute mti_svvh_generic_type of MOTOR_PWR_MASK_BIT : constant is 1;
+    attribute mti_svvh_generic_type of CAMERA_RST1_MASK_BIT : constant is 1;
+    attribute mti_svvh_generic_type of CAMERA_RST2_MASK_BIT : constant is 1;
+    attribute mti_svvh_generic_type of CAMERA_RST3_MASK_BIT : constant is 1;
+    attribute mti_svvh_generic_type of CAMERA_RST4_MASK_BIT : constant is 1;
+    attribute mti_svvh_generic_type of CAMERA_RST5_MASK_BIT : constant is 1;
+    attribute mti_svvh_generic_type of CAMERA_PWR_PULSE_TIME : constant is 1;
+    attribute mti_svvh_generic_type of IDLE : constant is 1;
+    attribute mti_svvh_generic_type of WAIT_FOR_PWR : constant is 1;
+    attribute mti_svvh_generic_type of \OPEN\ : constant is 1;
 end EP4CE10;

@@ -130,11 +130,11 @@ parameter 	FRAME_HEAD1 = 8'hAA,
        uart_tx(8'h00);
        uart_tx(8'h00);
        uart_tx(8'h10);
+       uart_tx(8'h1f);
        uart_tx(8'h0);
        uart_tx(8'h0);
-       uart_tx(8'h0);
-       uart_tx(8'h0b);
-       uart_tx(8'h54);
+       uart_tx(8'hcd);
+       uart_tx(8'h65);
        #10000;
        uart_tx(FRAME_HEAD1);
        uart_tx(FRAME_HEAD2);

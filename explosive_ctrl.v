@@ -454,6 +454,7 @@ always@(posedge clk)
 						  channel        <= 8'hff;
 						  pre_pwr_on     <= DISABLE;  
 						  pre_pwr_on_1   <= DISABLE;
+						  explosive_status[(PRE_POWER_MASK_BIT<<1)+1:PRE_POWER_MASK_BIT<<1]<=  2'b00;
 						  if((command_ready==1)&&(command_parameter[PRE_POWER_MASK_BIT]==DISABLE))
 						  //if(command_parameter[PRE_POWER_MASK_BIT]==DISABLE)
 							  state          <= IDLE;	

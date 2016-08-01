@@ -74,7 +74,7 @@ parameter   IDLE        = 5'd0,
             BYTE3       = 5'd11,
             BYTE4       = 5'd12,
 				BYTE5       = 5'd13,
-				BYTE6       = 5'd14
+				BYTE6       = 5'd14,
             CRC_H       = 5'd15,
             CRC_L       = 5'd16;		
 parameter   RX_TIME_OUT_PROTECTION = 32'd100000,	//guarding time between consecutive rx bytes,
@@ -157,7 +157,7 @@ always @ (posedge clk)
 						  uart_tx_ready<= 1'd1;
 					  end 
                  if(uart_tx_over)
-					     state_tx     <= FRAME_HEAD3;		  
+					     state_tx     <= HEAD3;		  
 		         end
 		 HEAD3  :begin
 		           if(uart_transmitting)
@@ -177,7 +177,7 @@ always @ (posedge clk)
 						  uart_tx_ready<= 1'd1;
 					  end 
                  if(uart_tx_over)
-					     state_tx     <= FRAME_HEAD5;		  
+					     state_tx     <= HEAD5;		  
 		         end
 		 HEAD5  :begin
 		           if(uart_transmitting)
@@ -340,7 +340,7 @@ always @ (posedge clk)
 		           if(uart_transmitting)
 					      uart_tx_ready<= 1'd 0;
 					  else if((tx_guarding_time_cnt==TX_GUARDING_TIME)&&(crc_ready_tx==1'b1))begin//uart transceiver is idle,and guarding time out
-    					  uart_tx_data <=  crc_tx[15:0];
+    					  uart_tx_data <=  crc_tx[15:8];
 						  uart_tx_ready<= 1'd 1;
 					  end 
                  if(uart_tx_over)begin
